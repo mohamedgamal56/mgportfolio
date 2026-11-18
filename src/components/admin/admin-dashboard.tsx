@@ -2,7 +2,9 @@
 
 import {
   AlertTriangle,
+  Check,
   CheckCircle2,
+  Copy,
   Database,
   ExternalLink,
   Film,
@@ -40,17 +42,20 @@ export function AdminDashboard({
   initialLeads,
   supabaseConfigured,
   adminEmail,
+  fullSetupSql = '',
 }: {
   initialBundle: PortfolioDataBundle;
   initialLeads: ContactLead[];
   supabaseConfigured: boolean;
   adminEmail: string | null;
+  fullSetupSql?: string;
 }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const [bundle, setBundle] = useState<PortfolioDataBundle>(initialBundle);
   const [leads, setLeads] = useState<ContactLead[]>(initialLeads);
   const [syncing, setSyncing] = useState(false);
+  const [copiedSql, setCopiedSql] = useState(false);
   const [toast, setToast] = useState<{ msg: string; isError?: boolean } | null>(null);
 
   const notify = (msg: string, isError = false) => {
@@ -251,6 +256,49 @@ export function AdminDashboard({
                   <span>رفع ومزامنة البيانات لـ Supabase</span>
                 </button>
               </div>
+
+              {bundle.source === 'seed' && (
+                <div className="rounded-xl border border-amberAccent/35 bg-amberAccent/10 p-4 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-extrabold text-amberAccent">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    <span>مطلوب تشغيل كود إنشاء الجداول (SQL) مرة واحدة فقط داخل Supabase</span>
+                  </div>
+                  <p className="text-xs leading-relaxed text-slate-200">
+                    تم ربط حسابك وتخزين الصور بنجاح، لكن جداول قاعدة البيانات لم تُنشأ في PostgreSQL بعد.
+                    اضغط زر النسخ أدناه، ثم افتح محرر SQL في Supabase والصقه واضغط <strong>Run</strong> مرة واحدة فقط ليتم حفظ التعديلات دائماً.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {fullSetupSql && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(fullSetupSql);
+                          setCopiedSql(true);
+                          notify('تم نسخ كود تهيئة الجداول والبيانات (SQL) بالكامل!');
+                          setTimeout(() => setCopiedSql(false), 2500);
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-amberAccent px-4 py-2 text-xs font-extrabold text-obsidian hover:brightness-110"
+                      >
+                        {copiedSql ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                        <span>
+                          {copiedSql
+                            ? 'تم النسخ!'
+                            : 'نسخ كود تهيئة الجداول والبيانات (SQL) لـ Supabase'}
+                        </span>
+                      </button>
+                    )}
+                    <a
+                      href="https://supabase.com/dashboard/project/xfuczpeigrzcnddvimcu/sql/new"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-bold text-white hover:border-tealAccent hover:text-tealAccent"
+                    >
+                      <span>فتح Supabase SQL Editor</span>
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

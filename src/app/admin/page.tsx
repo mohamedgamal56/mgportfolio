@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import React from 'react';
 import { AdminDashboard } from '@/components/admin/admin-dashboard';
 import { getPortfolioBundle } from '@/lib/portfolio-service';
@@ -32,12 +34,25 @@ export default async function AdminPage() {
     }
   }
 
+  let fullSetupSql = '';
+  if (bundle.source === 'seed') {
+    try {
+      fullSetupSql = fs.readFileSync(
+        path.join(process.cwd(), 'supabase', 'full-setup.sql'),
+        'utf8'
+      );
+    } catch {
+      fullSetupSql = '';
+    }
+  }
+
   return (
     <AdminDashboard
       initialBundle={bundle}
       initialLeads={leads}
       supabaseConfigured={supabaseReady}
       adminEmail={adminEmail}
+      fullSetupSql={fullSetupSql}
     />
   );
 }
