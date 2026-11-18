@@ -26,7 +26,7 @@ export function AdminSettingsTab({
   };
 
   const handleFileUpload = async (
-    field: 'hero_bg_image_url' | 'logo_url' | 'cv_url',
+    field: 'hero_bg_image_url' | 'logo_url',
     file: File | undefined,
     folder: string
   ) => {
@@ -171,47 +171,18 @@ export function AdminSettingsTab({
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-1 block text-xs text-slate-300">
-              رابط أو ID فيديو الـ Showreel (يوتيوب)
-            </label>
-            <input
-              type="text"
-              dir="ltr"
-              value={form.showreel_youtube_id || ''}
-              onChange={(e) => handleField('showreel_youtube_id', e.target.value || null)}
-              placeholder="مثال: https://youtube.com/shorts/..."
-              className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-xs text-slate-300">ملف السيرة الذاتية (CV PDF)</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                dir="ltr"
-                value={form.cv_url}
-                onChange={(e) => handleField('cv_url', e.target.value)}
-                className="flex-1 rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white"
-              />
-              <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-tealAccent/40 bg-tealAccent/10 px-3 py-2 text-xs font-bold text-tealAccent hover:bg-tealAccent/20">
-                {uploadingField === 'cv_url' ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Upload className="h-4 w-4" />
-                )}
-                <span>رفع PDF</span>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  className="hidden"
-                  onChange={(e) => handleFileUpload('cv_url', e.target.files?.[0], 'cv')}
-                />
-              </label>
-            </div>
-          </div>
+        <div>
+          <label className="mb-1 block text-xs text-slate-300">
+            رابط أو ID فيديو الـ Showreel (يوتيوب)
+          </label>
+          <input
+            type="text"
+            dir="ltr"
+            value={form.showreel_youtube_id || ''}
+            onChange={(e) => handleField('showreel_youtube_id', e.target.value || null)}
+            placeholder="مثال: https://youtube.com/shorts/u46_YdxD7vY"
+            className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white"
+          />
         </div>
       </div>
 

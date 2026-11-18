@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
   whatsapp_url TEXT NOT NULL,
   instagram_url TEXT NOT NULL,
   facebook_url TEXT NOT NULL,
-  cv_url TEXT NOT NULL DEFAULT '/Mohamed_Gamal_CV.pdf',
+  cv_url TEXT NOT NULL DEFAULT '',
   seo_description_ar TEXT NOT NULL,
   seo_description_en TEXT NOT NULL,
   section_visibility JSONB NOT NULL DEFAULT '{

@@ -43,7 +43,7 @@ export interface SiteSettings {
   whatsapp_url: string;
   instagram_url: string;
   facebook_url: string;
-  cv_url: string;
+  cv_url?: string | null;
   seo_description_ar: string;
   seo_description_en: string;
   section_visibility: SectionVisibility;

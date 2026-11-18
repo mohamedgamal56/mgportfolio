@@ -27,7 +27,7 @@ export const SEED_SETTINGS: SiteSettings = {
   hero_desc_en:
     'Shooting · Editing · Directing — commercial videos and short-form content with a clear visual identity.',
   hero_bg_image_url: '/images/hero-portrait.webp',
-  showreel_youtube_id: 'jGffxIM0sqQ',
+  showreel_youtube_id: 'u46_YdxD7vY',
   hww_eyebrow: 'HOW WE WORK',
   hww_title_ar: 'مش مجرد تصوير.',
   hww_title_en: 'Not just filming.',
@@ -42,7 +42,7 @@ export const SEED_SETTINGS: SiteSettings = {
   whatsapp_url: 'https://wa.me/201007176105',
   instagram_url: 'https://www.instagram.com/mohamed_gamal_pro/',
   facebook_url: 'https://www.facebook.com/Mohamedamalpro',
-  cv_url: '/Mohamed_Gamal_CV.pdf',
+  cv_url: '',
   seo_description_ar:
     'محمد جمال — مخرج ومصور وصانع محتوى ريلز وإعلانات وبودكاست بهوية بصرية سينمائية ونتائج حقيقية للبراندات والعيادات.',
   seo_description_en:

@@ -5,7 +5,6 @@ import {
   ArrowRight,
   CalendarCheck,
   Check,
-  Download,
   ExternalLink,
   Instagram,
   MessageCircle,
@@ -133,19 +132,6 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
                     <CalendarCheck className="h-4 w-4" />
                     <span>{lang === 'ar' ? 'احجز مشروعك' : 'Book a Project'}</span>
                   </a>
-
-                  {settings.cv_url && (
-                    <a
-                      href={settings.cv_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download
-                      className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-3.5 text-sm font-semibold text-slate-200 backdrop-blur-md transition hover:border-tealAccent/60 hover:text-tealAccent"
-                    >
-                      <Download className="h-4 w-4" />
-                      <span>{lang === 'ar' ? 'تحميل الـ CV' : 'Download CV'}</span>
-                    </a>
-                  )}
                 </div>
               </div>
 
@@ -505,8 +491,8 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-slate-300">
                 {lang === 'ar'
-                  ? 'تقدر تملى نموذج الحجز السريع أو تتواصل معي مباشرة على الواتساب أو منصات التواصل وتحمّل السيرة الذاتية.'
-                  : 'Fill out the quick brief or reach out directly via WhatsApp, Instagram, Facebook, or download my CV.'}
+                  ? 'تقدر تملى نموذج الحجز السريع أو تتواصل معي مباشرة على الواتساب أو منصات التواصل.'
+                  : 'Fill out the quick brief or reach out directly via WhatsApp, Instagram, or Facebook.'}
               </p>
 
               <div className="mt-7 flex flex-col gap-3">
@@ -548,24 +534,6 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
                   </span>
                   <ExternalLink className="h-4 w-4" />
                 </a>
-
-                {settings.cv_url && (
-                  <a
-                    href={settings.cv_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                    className="inline-flex items-center justify-between rounded-2xl border border-white/15 bg-white/5 px-5 py-3.5 text-sm font-bold text-slate-200 transition hover:border-tealAccent/50 hover:text-tealAccent"
-                  >
-                    <span className="flex items-center gap-2.5">
-                      <Download className="h-5 w-5" />
-                      <span>
-                        {lang === 'ar' ? 'تحميل السيرة الذاتية (CV)' : 'Download CV (PDF)'}
-                      </span>
-                    </span>
-                    <ArrowIcon className="h-4 w-4" />
-                  </a>
-                )}
               </div>
             </div>
 
