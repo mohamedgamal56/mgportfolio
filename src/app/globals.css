@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-obsidian: #040908;
+  --panel-glass: rgba(7, 22, 19, 0.72);
+  --teal-accent: #20d8bd;
+  --violet-accent: #9b62ff;
+  --amber-accent: #e9a83d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-obsidian);
+  color: #f5fbf9;
+}
+
+body {
+  background: radial-gradient(circle at 75% 0%, #10332c 0%, #050c0a 38%, #020504 100%);
+  color: #f5fbf9;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle cinema studio grid texture */
+.studio-grid-bg {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+  background-size: 54px 54px;
+}
+
+/* CRITICAL FIX: Never apply negative letter-spacing to Arabic script */
+[dir='rtl'] h1,
+[dir='rtl'] h2,
+[dir='rtl'] h3,
+[dir='rtl'] h4,
+[dir='rtl'] .arabic-no-tracking {
+  letter-spacing: 0 !important;
+}
+
+[dir='rtl'] {
+  font-family: var(--font-cairo), 'Cairo', sans-serif;
+}
+
+[dir='ltr'] {
+  font-family: var(--font-jakarta), var(--font-cairo), sans-serif;
+}
+
+/* Glassmorphism surfaces */
+.glass-panel {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015));
+  border: 1px solid rgba(32, 216, 189, 0.18);
+  backdrop-filter: blur(16px);
+}
+
+.glass-card-teal {
+  border-color: rgba(32, 216, 189, 0.25);
+}
+.glass-card-teal:hover {
+  border-color: rgba(32, 216, 189, 0.7);
+  box-shadow: 0 12px 32px -8px rgba(32, 216, 189, 0.25);
+}
+
+.glass-card-violet {
+  border-color: rgba(155, 98, 255, 0.28);
+}
+.glass-card-violet:hover {
+  border-color: rgba(155, 98, 255, 0.75);
+  box-shadow: 0 12px 32px -8px rgba(155, 98, 255, 0.25);
+}
+
+.glass-card-amber {
+  border-color: rgba(233, 168, 61, 0.28);
+}
+.glass-card-amber:hover {
+  border-color: rgba(233, 168, 61, 0.75);
+  box-shadow: 0 12px 32px -8px rgba(233, 168, 61, 0.24);
+}
