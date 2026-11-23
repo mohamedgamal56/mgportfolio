@@ -4,6 +4,7 @@ import { CheckCircle2, Loader2, MessageSquare, Send } from 'lucide-react';
 import React, { useState } from 'react';
 import type { SiteSettings } from '@/types/portfolio';
 import { useLanguage } from './language-provider';
+import { trackAnalyticsEvent } from './meta-pixel';
 
 export function BookingForm({ settings }: { settings: SiteSettings }) {
   const { lang } = useLanguage();
@@ -66,6 +67,10 @@ export function BookingForm({ settings }: { settings: SiteSettings }) {
       if (!res.ok) {
         throw new Error(data.error || 'Failed to submit');
       }
+      trackAnalyticsEvent('Lead', {
+        project_type: projectType,
+        industry: industryField,
+      });
       setSubmitted(true);
     } catch (err) {
       setErrorMsg(
@@ -268,6 +273,7 @@ export function BookingForm({ settings }: { settings: SiteSettings }) {
           href={buildWhatsappDirectUrl()}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackAnalyticsEvent('Contact', { channel: 'whatsapp_direct' })}
           className="inline-flex items-center justify-center gap-2 rounded-full border border-tealAccent/40 bg-tealAccent/10 px-5 py-3 text-xs font-bold text-tealAccent transition hover:bg-tealAccent/20"
         >
           <MessageSquare className="h-4 w-4" />
