@@ -22,7 +22,7 @@ const jakarta = Plus_Jakarta_Sans({
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getPortfolioBundle();
   const title = `${settings.brand_name_ar} — ${settings.hero_role_en}`;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mgportfolio-five.vercel.app';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mohamedgamalpro.com';
 
   return {
     metadataBase: new URL(siteUrl),
