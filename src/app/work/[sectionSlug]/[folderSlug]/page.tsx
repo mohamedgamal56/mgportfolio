@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import React from 'react';
 import { FolderViewClient } from '@/components/folder-view-client';
 import { getPortfolioBundle } from '@/lib/portfolio-service';
+import { buildOgMetadata, pickCollectionOgImage } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,9 +20,23 @@ export async function generateMetadata({
   );
   if (!section || !folder) return {};
 
+  const title = `${folder.title_ar} | ${section.title_ar}`;
+  const description = [folder.subtitle_ar, section.description_ar]
+    .filter(Boolean)
+    .join(' — ');
+  const siteName = `${bundle.settings.brand_name_ar} | ${bundle.settings.brand_name_en}`;
+
   return {
-    title: `${folder.title_ar} | ${section.title_ar} — ${bundle.settings.brand_name_ar}`,
-    description: folder.subtitle_ar || section.description_ar,
+    title,
+    description,
+    ...buildOgMetadata({
+      title: `${title} — ${bundle.settings.brand_name_ar}`,
+      description,
+      path: `/work/${section.id}/${folder.id}`,
+      imageUrl: pickCollectionOgImage(bundle, section.id, folder.id),
+      alt: `${folder.title_ar} — ${bundle.settings.brand_name_en}`,
+      siteName,
+    }),
   };
 }
 

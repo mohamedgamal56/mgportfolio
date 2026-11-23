@@ -42,7 +42,7 @@ export function MediaCard({ item }: { item: MediaItem }) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={item.image_url}
-              alt={title || 'Result'}
+              alt={title ? `${title} — محمد جمال` : 'نتائج أعمال محمد جمال'}
               loading="lazy"
               className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
             />
@@ -93,7 +93,11 @@ export function MediaCard({ item }: { item: MediaItem }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={thumbUrl}
-              alt={title || 'Video thumbnail'}
+              alt={
+                title
+                  ? `${title}${roleTags ? ` (${roleTags})` : ''} — محمد جمال`
+                  : 'أعمال محمد جمال في التصوير والمونتاج'
+              }
               loading="lazy"
               className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
             />

@@ -44,9 +44,9 @@ export const SEED_SETTINGS: SiteSettings = {
   facebook_url: 'https://www.facebook.com/MohamedGamalProo',
   cv_url: '',
   seo_description_ar:
-    'محمد جمال — مخرج ومصور وصانع محتوى ريلز وإعلانات وبودكاست بهوية بصرية سينمائية ونتائج حقيقية للبراندات والعيادات.',
+    'محمد جمال — مخرج ومصور ومونتير لصناعة الريلز والإعلانات التجارية، تصوير البودكاست، والمحتوى الطبي للعيادات والبراندات في مصر. شاهد الأعمال واحجز مشروعك.',
   seo_description_en:
-    'Mohamed Gamal — Commercial Filmmaker, Reel Creator & Video Editor crafting high-impact visual content for clinics, brands, and podcasts.',
+    'Mohamed Gamal — Commercial Filmmaker, Video Editor & Reel Creator crafting high-impact Reels, ads, podcasts, and medical content for clinics and brands.',
   section_visibility: {
     explore_work: true,
     featured_work: true,

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import React from 'react';
 import { SectionViewClient } from '@/components/section-view-client';
 import { getPortfolioBundle } from '@/lib/portfolio-service';
+import { buildOgMetadata, pickCollectionOgImage } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,9 +17,23 @@ export async function generateMetadata({
   const section = bundle.sections.find((s) => s.id === sectionSlug);
   if (!section) return {};
 
+  const title = `${section.title_ar} — أعمال ${bundle.settings.brand_name_ar}`;
+  const description =
+    section.description_ar ||
+    `${section.title_ar} — ${bundle.settings.seo_description_ar}`;
+  const siteName = `${bundle.settings.brand_name_ar} | ${bundle.settings.brand_name_en}`;
+
   return {
-    title: `${section.title_ar} — ${bundle.settings.brand_name_ar}`,
-    description: section.description_ar,
+    title,
+    description,
+    ...buildOgMetadata({
+      title,
+      description,
+      path: `/work/${section.id}`,
+      imageUrl: pickCollectionOgImage(bundle, section.id),
+      alt: `${section.title_ar} — ${bundle.settings.brand_name_en}`,
+      siteName,
+    }),
   };
 }
 

@@ -3,6 +3,12 @@ import { Cairo, Plus_Jakarta_Sans } from 'next/font/google';
 import React from 'react';
 import { LanguageProvider } from '@/components/language-provider';
 import { getPortfolioBundle } from '@/lib/portfolio-service';
+import {
+  buildOgMetadata,
+  DEFAULT_SEO_KEYWORDS,
+  getSiteUrl,
+  resolveSeoDescriptionAr,
+} from '@/lib/seo';
 import './globals.css';
 
 const cairo = Cairo({
@@ -21,33 +27,42 @@ const jakarta = Plus_Jakarta_Sans({
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getPortfolioBundle();
-  const title = `${settings.brand_name_ar} — ${settings.hero_role_en}`;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mohamedgamalpro.com';
+  const siteUrl = getSiteUrl();
+  const title = `${settings.brand_name_ar} — مخرج ومصور ومونتير وصانع ريلز | ${settings.brand_name_en}`;
+  const description = resolveSeoDescriptionAr(settings);
+  const siteName = `${settings.brand_name_ar} | ${settings.brand_name_en}`;
+  const ogImage = settings.hero_bg_image_url || '/images/hero-portrait.webp';
 
   return {
     metadataBase: new URL(siteUrl),
-    title,
-    description: settings.seo_description_ar,
-    openGraph: {
-      title,
-      description: settings.seo_description_ar,
-      type: 'website',
-      locale: 'ar_EG',
-      images: [
-        {
-          url: settings.hero_bg_image_url || '/images/hero-portrait.webp',
-          width: 1163,
-          height: 1352,
-          alt: settings.brand_name_en,
-        },
-      ],
+    title: {
+      default: title,
+      template: `%s | ${settings.brand_name_ar}`,
     },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description: settings.seo_description_ar,
-      images: [settings.hero_bg_image_url || '/images/hero-portrait.webp'],
+    description,
+    keywords: DEFAULT_SEO_KEYWORDS,
+    authors: [{ name: settings.brand_name_en, url: siteUrl }],
+    creator: settings.brand_name_en,
+    publisher: settings.brand_name_en,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-video-preview': -1,
+        'max-snippet': -1,
+      },
     },
+    ...buildOgMetadata({
+      title,
+      description,
+      path: '/',
+      imageUrl: ogImage,
+      alt: `${settings.brand_name_ar} — ${settings.brand_name_en}`,
+      siteName,
+    }),
   };
 }
 
