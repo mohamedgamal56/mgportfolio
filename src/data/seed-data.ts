@@ -41,7 +41,7 @@ export const SEED_SETTINGS: SiteSettings = {
   whatsapp_number: '201007176105',
   whatsapp_url: 'https://wa.me/201007176105',
   instagram_url: 'https://www.instagram.com/mohamed_gamal_pro/',
-  facebook_url: 'https://www.facebook.com/Mohamedamalpro',
+  facebook_url: 'https://www.facebook.com/MohamedGamalProo',
   cv_url: '',
   seo_description_ar:
     'محمد جمال — مخرج ومصور وصانع محتوى ريلز وإعلانات وبودكاست بهوية بصرية سينمائية ونتائج حقيقية للبراندات والعيادات.',
