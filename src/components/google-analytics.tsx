@@ -25,7 +25,10 @@ export function GoogleAnalytics() {
       return;
     }
     if (typeof window.gtag === 'function') {
-      window.gtag('config', GA_MEASUREMENT_ID, { page_path: pathname });
+      window.gtag('config', GA_MEASUREMENT_ID, {
+        page_path: pathname,
+        page_title: typeof document !== 'undefined' ? document.title : undefined,
+      });
     }
   }, [pathname]);
 
