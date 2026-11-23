@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { notifyNewLead } from '@/lib/lead-notifications';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 
 export async function POST(request: Request) {
@@ -37,6 +38,15 @@ export async function POST(request: Request) {
         );
       }
     }
+
+    await notifyNewLead({
+      clientName,
+      whatsappPhone,
+      projectType,
+      industryField,
+      budgetRange,
+      projectDetails,
+    });
 
     return NextResponse.json({
       ok: true,
