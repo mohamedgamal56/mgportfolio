@@ -28,6 +28,10 @@ export function trackAnalyticsEvent(
   if (typeof window !== 'undefined' && typeof window.fbq === 'function' && META_PIXEL_ID) {
     window.fbq('track', eventName, params);
   }
+
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+    window.gtag('event', eventName === 'Lead' ? 'generate_lead' : 'contact', params);
+  }
 }
 
 export function MetaPixel() {

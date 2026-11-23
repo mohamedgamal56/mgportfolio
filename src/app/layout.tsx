@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 import { Cairo, Plus_Jakarta_Sans } from 'next/font/google';
 import React from 'react';
+import { GoogleAnalytics } from '@/components/google-analytics';
 import { LanguageProvider } from '@/components/language-provider';
 import { MetaPixel } from '@/components/meta-pixel';
 import { getPortfolioBundle } from '@/lib/portfolio-service';
@@ -85,6 +86,7 @@ export default function RootLayout({
       <body className="studio-grid-bg antialiased selection:bg-tealAccent/30 selection:text-white">
         <LanguageProvider>{children}</LanguageProvider>
         <Analytics />
+        <GoogleAnalytics />
         <MetaPixel />
       </body>
     </html>
