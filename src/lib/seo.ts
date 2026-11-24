@@ -5,15 +5,24 @@ import { getYouTubeThumbUrl } from './utils';
 const DEFAULT_SITE_URL = 'https://mohamedgamalpro.com';
 const OLD_SHORT_SEO_AR =
   'محمد جمال — مخرج ومصور وصانع محتوى ريلز وإعلانات وبودكاست بهوية بصرية سينمائية ونتائج حقيقية للبراندات والعيادات.';
+const PREV_SEO_AR =
+  'محمد جمال — مخرج ومصور ومونتير لصناعة الريلز والإعلانات التجارية، تصوير البودكاست، والمحتوى الطبي للعيادات والبراندات في مصر. شاهد الأعمال واحجز مشروعك.';
 
 export const DEFAULT_SEO_DESCRIPTION_AR =
-  'محمد جمال — مخرج ومصور ومونتير لصناعة الريلز والإعلانات التجارية، تصوير البودكاست، والمحتوى الطبي للعيادات والبراندات في مصر. شاهد الأعمال واحجز مشروعك.';
+  'محمد جمال — مصور فيديو في المنصورة ومصر، ومخرج ومونتير يقدم تصوير فيديو احترافي لصناعة الريلز والإعلانات التجارية والبودكاست والمحتوى الطبي للعيادات والبراندات.';
 
 export const DEFAULT_SEO_DESCRIPTION_EN =
   'Mohamed Gamal — Commercial Filmmaker, Video Editor & Reel Creator crafting high-impact Reels, ads, podcasts, and medical content for clinics and brands.';
 
 export const DEFAULT_SEO_KEYWORDS = [
   'محمد جمال',
+  'مصور فيديو',
+  'مصور فيديو في مصر',
+  'مصور فيديو في المنصورة',
+  'مصور في المنصورة',
+  'تصوير فيديو في المنصورة',
+  'تصوير فيديو احترافي',
+  'تصوير فيديو احترافي في مصر',
   'مصور ومونتير',
   'مخرج إعلانات',
   'صانع ريلز',
@@ -48,7 +57,7 @@ export function toAbsoluteUrl(urlOrPath: string | null | undefined, siteUrl = ge
 
 export function resolveSeoDescriptionAr(settings: SiteSettings): string {
   const raw = settings.seo_description_ar?.trim();
-  if (!raw || raw === OLD_SHORT_SEO_AR) {
+  if (!raw || raw === OLD_SHORT_SEO_AR || raw === PREV_SEO_AR) {
     return DEFAULT_SEO_DESCRIPTION_AR;
   }
   return raw;
@@ -187,10 +196,22 @@ export function buildPortfolioJsonLd(bundle: PortfolioDataBundle) {
         alternateName: settings.brand_name_en,
         url: siteUrl,
         image: toAbsoluteUrl(settings.hero_bg_image_url, siteUrl),
-        jobTitle: 'Commercial Filmmaker, Video Editor & Reel Creator',
+        jobTitle:
+          'مصور فيديو في المنصورة ومصر · مخرج إعلانات ومونتير | Commercial Filmmaker, Video Editor & Reel Creator',
         description,
+        homeLocation: {
+          '@type': 'Place',
+          name: 'المنصورة، مصر',
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: 'Mansoura',
+            addressCountry: 'EG',
+          },
+        },
         sameAs,
         knowsAbout: [
+          'مصور فيديو في المنصورة',
+          'تصوير فيديو احترافي في مصر',
           'Commercial Video Production',
           'Reels Creation',
           'Medical Video Content',

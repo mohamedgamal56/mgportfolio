@@ -31,7 +31,7 @@ const jakarta = Plus_Jakarta_Sans({
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getPortfolioBundle();
   const siteUrl = getSiteUrl();
-  const title = `${settings.brand_name_ar} — مخرج ومصور ومونتير وصانع ريلز | ${settings.brand_name_en}`;
+  const title = `${settings.brand_name_ar} — مصور فيديو في المنصورة ومصر ومخرج ومونتير | ${settings.brand_name_en}`;
   const description = resolveSeoDescriptionAr(settings);
   const siteName = settings.brand_name_ar;
   const ogImage = settings.hero_bg_image_url || '/images/hero-portrait.webp';

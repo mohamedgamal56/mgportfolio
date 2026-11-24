@@ -46,7 +46,7 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
   useEffect(() => {
     document.title =
       lang === 'ar'
-        ? `${settings.brand_name_ar} — مخرج ومصور ومونتير وصانع ريلز | ${settings.brand_name_en}`
+        ? `${settings.brand_name_ar} — مصور فيديو في المنصورة ومصر ومخرج ومونتير | ${settings.brand_name_en}`
         : `${settings.brand_name_en} — Commercial Filmmaker, Video Editor & Reel Creator`;
   }, [lang, settings.brand_name_ar, settings.brand_name_en]);
 
