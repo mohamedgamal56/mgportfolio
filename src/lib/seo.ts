@@ -174,8 +174,9 @@ export function buildPortfolioJsonLd(bundle: PortfolioDataBundle) {
       {
         '@type': 'WebSite',
         '@id': `${siteUrl}/#website`,
-        url: siteUrl,
-        name: `${settings.brand_name_ar} | ${settings.brand_name_en}`,
+        url: `${siteUrl}/`,
+        name: settings.brand_name_ar,
+        alternateName: [settings.brand_name_en, 'MG Portfolio', 'mohamedgamalpro.com'],
         description,
         inLanguage: ['ar', 'en'],
       },

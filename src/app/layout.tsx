@@ -33,11 +33,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteUrl = getSiteUrl();
   const title = `${settings.brand_name_ar} — مخرج ومصور ومونتير وصانع ريلز | ${settings.brand_name_en}`;
   const description = resolveSeoDescriptionAr(settings);
-  const siteName = `${settings.brand_name_ar} | ${settings.brand_name_en}`;
+  const siteName = settings.brand_name_ar;
   const ogImage = settings.hero_bg_image_url || '/images/hero-portrait.webp';
 
   return {
     metadataBase: new URL(siteUrl),
+    applicationName: settings.brand_name_ar,
     title: {
       default: title,
       template: `%s | ${settings.brand_name_ar}`,
@@ -47,6 +48,19 @@ export async function generateMetadata(): Promise<Metadata> {
     authors: [{ name: settings.brand_name_en, url: siteUrl }],
     creator: settings.brand_name_en,
     publisher: settings.brand_name_en,
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+        { url: '/icon-48x48.png', sizes: '48x48', type: 'image/png' },
+        { url: '/icon-96x96.png', sizes: '96x96', type: 'image/png' },
+        { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/icon.svg', sizes: 'any', type: 'image/svg+xml' },
+      ],
+      shortcut: ['/favicon.ico'],
+      apple: [
+        { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      ],
+    },
     robots: {
       index: true,
       follow: true,

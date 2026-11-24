@@ -28,7 +28,7 @@ export async function generateMetadata({
   const description = [folder.subtitle_ar, section.description_ar]
     .filter(Boolean)
     .join(' — ');
-  const siteName = `${bundle.settings.brand_name_ar} | ${bundle.settings.brand_name_en}`;
+  const siteName = bundle.settings.brand_name_ar;
 
   return {
     title,

@@ -22,7 +22,7 @@ export async function generateMetadata({
   const description =
     section.description_ar ||
     `${section.title_ar} — ${bundle.settings.seo_description_ar}`;
-  const siteName = `${bundle.settings.brand_name_ar} | ${bundle.settings.brand_name_en}`;
+  const siteName = bundle.settings.brand_name_ar;
 
   return {
     title,
