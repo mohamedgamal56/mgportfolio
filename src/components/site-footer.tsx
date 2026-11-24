@@ -1,7 +1,5 @@
 'use client';
 
-import { Lock } from 'lucide-react';
-import Link from 'next/link';
 import React from 'react';
 import type { SiteSettings } from '@/types/portfolio';
 import { useLanguage } from './language-provider';
@@ -17,7 +15,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
           <span>·</span>
           <span>{t(settings.brand_name_ar, settings.brand_name_en)}</span>
           <span className="hidden sm:inline text-slate-500">
-            | {t(settings.hero_role_ar, settings.hero_role_en)}
+            — {t(settings.hero_role_ar, settings.hero_role_en)}
           </span>
         </div>
 
@@ -27,13 +25,6 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
               ? `جميع الحقوق محفوظة © ${new Date().getFullYear()}`
               : `© ${new Date().getFullYear()} ${settings.brand_name_en}. All rights reserved.`}
           </span>
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 text-[11px] text-slate-400 transition hover:border-tealAccent/50 hover:text-tealAccent"
-          >
-            <Lock className="h-3 w-3" />
-            <span>{lang === 'ar' ? 'الإدارة' : 'Admin'}</span>
-          </Link>
         </div>
       </div>
     </footer>

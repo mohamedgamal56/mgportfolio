@@ -2,7 +2,7 @@
 
 import { ArrowLeft, ArrowRight, Check, Copy } from 'lucide-react';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type {
   MediaItem,
   PortfolioFolder,
@@ -30,6 +30,32 @@ export function FolderViewClient({
 }) {
   const { lang, t } = useLanguage();
   const [copied, setCopied] = useState(false);
+
+  const folderTitle = t(folder.title_ar, folder.title_en);
+  const rawSubtitle = t(folder.subtitle_ar, folder.subtitle_en);
+  const showSubtitle =
+    Boolean(rawSubtitle) &&
+    rawSubtitle.trim().toLowerCase() !== folderTitle.trim().toLowerCase();
+
+  useEffect(() => {
+    const folderTitleAr =
+      /^[A-Za-z0-9\s&.-]+$/.test(folder.title_ar) && folder.subtitle_ar
+        ? folder.subtitle_ar
+        : folder.title_ar;
+    document.title =
+      lang === 'ar'
+        ? `${folderTitleAr} | ${section.title_ar} | ${settings.brand_name_ar}`
+        : `${folder.title_en} | ${section.title_en} — ${settings.brand_name_en}`;
+  }, [
+    lang,
+    folder.title_ar,
+    folder.title_en,
+    folder.subtitle_ar,
+    section.title_ar,
+    section.title_en,
+    settings.brand_name_ar,
+    settings.brand_name_en,
+  ]);
 
   const BackIcon = lang === 'ar' ? ArrowRight : ArrowLeft;
 
@@ -96,11 +122,11 @@ export function FolderViewClient({
                 {t(section.title_ar, section.title_en)}
               </span>
               <h1 className="text-2xl font-black text-white sm:text-3xl">
-                {t(folder.title_ar, folder.title_en)}
+                {folderTitle}
               </h1>
-              {(folder.subtitle_ar || folder.subtitle_en) && (
+              {showSubtitle && (
                 <p className="mt-1 text-xs text-slate-400">
-                  {t(folder.subtitle_ar, folder.subtitle_en)}
+                  {rawSubtitle}
                 </p>
               )}
             </div>

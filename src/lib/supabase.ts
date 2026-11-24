@@ -2,12 +2,10 @@ import { createBrowserClient } from '@supabase/ssr';
 
 const DEFAULT_SUPABASE_URL = 'https://xfuczpeigrzcnddvimcu.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_H1X9zDfoT-gTjW-utLXcCQ_yAGDhjwg';
-const DEFAULT_ADMIN_EMAIL = 'mandogemy56@gmail.com';
 
 export function getSupabaseConfig() {
   const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const envKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const envAdminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   const url =
     envUrl && envUrl.startsWith('https://') && !envUrl.includes('your-project-id')
@@ -19,9 +17,7 @@ export function getSupabaseConfig() {
       ? envKey
       : DEFAULT_SUPABASE_ANON_KEY;
 
-  const adminEmail = (envAdminEmail || DEFAULT_ADMIN_EMAIL).trim().toLowerCase();
-
-  return { url, anonKey, adminEmail };
+  return { url, anonKey };
 }
 
 export function isSupabaseConfigured(): boolean {

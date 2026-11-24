@@ -153,6 +153,7 @@ export function buildPortfolioJsonLd(bundle: PortfolioDataBundle) {
           '@type': 'VideoObject',
           name,
           description: videoDesc || description,
+          uploadDate: m.created_at || '2026-01-01T00:00:00Z',
           thumbnailUrl: toAbsoluteUrl(
             m.custom_thumb_url || getYouTubeThumbUrl(m.youtube_id as string),
             siteUrl

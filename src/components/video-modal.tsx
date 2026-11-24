@@ -76,12 +76,15 @@ export function VideoLightbox({
         {youtubeId ? (
           <div
             className={cn(
-              'relative w-full overflow-hidden rounded-xl bg-black',
-              isVertical ? 'aspect-[9/16] max-h-[78vh] mx-auto' : 'aspect-video'
+              'relative overflow-hidden rounded-xl bg-black',
+              isVertical ? 'aspect-[9/16] mx-auto' : 'aspect-video w-full'
             )}
+            style={
+              isVertical ? { width: 'min(100%, calc(78vh * 9 / 16))' } : undefined
+            }
           >
             <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+              src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0&playsinline=1`}
               title={title || 'YouTube Video'}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen

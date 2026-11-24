@@ -1,14 +1,16 @@
 'use client';
 
 import { ArrowLeft, ArrowRight, Check, Copy } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type {
   MediaItem,
   PortfolioFolder,
   PortfolioSection,
   SiteSettings,
 } from '@/types/portfolio';
+import { isOptimizableImageUrl } from '@/lib/utils';
 import { useLanguage } from './language-provider';
 import { PortfolioIcon } from './icon-mapper';
 import { SiteFooter } from './site-footer';
@@ -21,15 +23,30 @@ export function SectionViewClient({
   section,
   folders,
   directMedia,
+  folderPreviews = {},
 }: {
   settings: SiteSettings;
   allSections: PortfolioSection[];
   section: PortfolioSection;
   folders: PortfolioFolder[];
   directMedia: MediaItem[];
+  folderPreviews?: Record<string, { thumbUrl: string | null; count: number }>;
 }) {
   const { lang, t } = useLanguage();
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    document.title =
+      lang === 'ar'
+        ? `${section.title_ar} — أعمال ${settings.brand_name_ar} | ${settings.brand_name_ar}`
+        : `${section.title_en} — ${settings.brand_name_en}`;
+  }, [
+    lang,
+    section.title_ar,
+    section.title_en,
+    settings.brand_name_ar,
+    settings.brand_name_en,
+  ]);
 
   const BackIcon = lang === 'ar' ? ArrowRight : ArrowLeft;
   const ForwardIcon = lang === 'ar' ? ArrowLeft : ArrowRight;
@@ -118,30 +135,82 @@ export function SectionViewClient({
               {lang === 'ar' ? 'التصنيفات والمجلدات' : 'Collections & Folders'}
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {folders.map((folder) => (
-                <Link
-                  key={folder.id}
-                  href={`/work/${section.id}/${folder.id}`}
-                  className="group glass-panel flex items-center justify-between gap-4 rounded-2xl p-5 transition duration-300 hover:-translate-y-1 hover:border-tealAccent/60"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-tealAccent/25 bg-tealAccent/10 text-tealAccent">
-                      <PortfolioIcon name={folder.icon_name} className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-base font-extrabold text-white">
-                        {t(folder.title_ar, folder.title_en)}
-                      </h3>
-                      {(folder.subtitle_ar || folder.subtitle_en) && (
-                        <p className="mt-0.5 text-xs text-slate-400">
-                          {t(folder.subtitle_ar, folder.subtitle_en)}
-                        </p>
+              {folders.map((folder) => {
+                const folderTitle = t(folder.title_ar, folder.title_en);
+                const rawSubtitle = t(folder.subtitle_ar, folder.subtitle_en);
+                const showSubtitle =
+                  Boolean(rawSubtitle) &&
+                  rawSubtitle.trim().toLowerCase() !== folderTitle.trim().toLowerCase();
+                const preview = folderPreviews[folder.id];
+                const itemCount = preview?.count ?? 0;
+                const countLabel =
+                  lang === 'ar'
+                    ? itemCount === 1
+                      ? 'عمل واحد'
+                      : `${itemCount} أعمال`
+                    : itemCount === 1
+                      ? '1 item'
+                      : `${itemCount} items`;
+
+                return (
+                  <Link
+                    key={folder.id}
+                    href={`/work/${section.id}/${folder.id}`}
+                    className="group glass-panel flex flex-col overflow-hidden rounded-2xl transition duration-300 hover:-translate-y-1 hover:border-tealAccent/60"
+                  >
+                    <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-white/10 bg-[#061210]">
+                      {preview?.thumbUrl ? (
+                        isOptimizableImageUrl(preview.thumbUrl) ? (
+                          <Image
+                            src={preview.thumbUrl}
+                            alt={folderTitle}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover transition duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={preview.thumbUrl}
+                            alt={folderTitle}
+                            loading="lazy"
+                            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                          />
+                        )
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-tealAccent/10 via-transparent to-violetAccent/10 text-tealAccent">
+                          <PortfolioIcon name={folder.icon_name} className="h-10 w-10 opacity-80" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+                      {itemCount > 0 && (
+                        <span className="absolute end-3 top-3 rounded-full border border-white/15 bg-black/65 px-2.5 py-0.5 text-[11px] font-bold text-slate-100 backdrop-blur-md">
+                          {countLabel}
+                        </span>
                       )}
                     </div>
-                  </div>
-                  <ForwardIcon className="h-5 w-5 shrink-0 text-tealAccent opacity-60 transition group-hover:opacity-100" />
-                </Link>
-              ))}
+
+                    <div className="flex items-center justify-between gap-4 p-5">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-tealAccent/25 bg-tealAccent/10 text-tealAccent">
+                          <PortfolioIcon name={folder.icon_name} className="h-5 w-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="truncate text-base font-extrabold text-white">
+                            {folderTitle}
+                          </h3>
+                          {showSubtitle && (
+                            <p className="mt-0.5 truncate text-xs text-slate-400">
+                              {rawSubtitle}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <ForwardIcon className="h-5 w-5 shrink-0 text-tealAccent opacity-60 transition group-hover:opacity-100" />
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}

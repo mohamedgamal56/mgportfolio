@@ -13,7 +13,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const { url, anonKey, adminEmail } = getSupabaseConfig();
+  const { url, anonKey } = getSupabaseConfig();
+  const adminEmail = (
+    process.env.ADMIN_EMAIL ||
+    process.env.NEXT_PUBLIC_ADMIN_EMAIL ||
+    'mandogemy56@gmail.com'
+  )
+    .trim()
+    .toLowerCase();
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(url, anonKey, {

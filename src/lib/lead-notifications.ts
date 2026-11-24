@@ -66,6 +66,7 @@ async function sendEmailViaResend(payload: LeadNotificationPayload, waUrl: strin
 
   const toEmail =
     process.env.LEAD_NOTIFY_EMAIL?.trim() ||
+    process.env.ADMIN_EMAIL?.trim() ||
     process.env.NEXT_PUBLIC_ADMIN_EMAIL?.trim() ||
     DEFAULT_NOTIFY_EMAIL;
 

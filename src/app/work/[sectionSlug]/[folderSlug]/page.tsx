@@ -5,7 +5,7 @@ import { FolderViewClient } from '@/components/folder-view-client';
 import { getPortfolioBundle } from '@/lib/portfolio-service';
 import { buildOgMetadata, pickCollectionOgImage } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -20,7 +20,11 @@ export async function generateMetadata({
   );
   if (!section || !folder) return {};
 
-  const title = `${folder.title_ar} | ${section.title_ar}`;
+  const folderTitleAr =
+    /^[A-Za-z0-9\s&.-]+$/.test(folder.title_ar) && folder.subtitle_ar
+      ? folder.subtitle_ar
+      : folder.title_ar;
+  const title = `${folderTitleAr} | ${section.title_ar}`;
   const description = [folder.subtitle_ar, section.description_ar]
     .filter(Boolean)
     .join(' — ');

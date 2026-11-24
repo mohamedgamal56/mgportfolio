@@ -1,6 +1,21 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { getSupabaseConfig, isSupabaseConfigured } from './supabase';
+
+export function createSupabasePublicClient() {
+  if (!isSupabaseConfigured()) {
+    return null;
+  }
+
+  const { url, anonKey } = getSupabaseConfig();
+  return createClient(url, anonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+}
 
 export async function createSupabaseServerClient() {
   if (!isSupabaseConfigured()) {

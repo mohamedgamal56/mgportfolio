@@ -3,7 +3,7 @@ import { HomeClient } from '@/components/home-client';
 import { getPortfolioBundle } from '@/lib/portfolio-service';
 import { buildPortfolioJsonLd } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export default async function HomePage() {
   const bundle = await getPortfolioBundle();

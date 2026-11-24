@@ -96,6 +96,7 @@ export interface MediaItem {
   is_featured: boolean;
   sort_order: number;
   is_visible: boolean;
+  created_at?: string | null;
 }
 
 export interface ProcessStep {

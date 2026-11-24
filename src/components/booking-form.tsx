@@ -1,22 +1,35 @@
 'use client';
 
 import { CheckCircle2, Loader2, MessageSquare, Send } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { SiteSettings } from '@/types/portfolio';
 import { useLanguage } from './language-provider';
 import { trackAnalyticsEvent } from './meta-pixel';
 
-export function BookingForm({ settings }: { settings: SiteSettings }) {
+export function BookingForm({
+  settings,
+  selectedProjectType,
+}: {
+  settings: SiteSettings;
+  selectedProjectType?: string;
+}) {
   const { lang } = useLanguage();
   const [clientName, setClientName] = useState('');
   const [whatsappPhone, setWhatsappPhone] = useState('');
-  const [projectType, setProjectType] = useState('Reels Package');
+  const [projectType, setProjectType] = useState(selectedProjectType || 'Reels Package');
   const [industryField, setIndustryField] = useState('Medical / Clinic');
   const [budgetRange, setBudgetRange] = useState('');
   const [projectDetails, setProjectDetails] = useState('');
+  const [website, setWebsite] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (selectedProjectType) {
+      setProjectType(selectedProjectType);
+    }
+  }, [selectedProjectType]);
 
   const projectTypes = [
     { value: 'Reels Package', ar: 'باقة فيديوهات Reels', en: 'Reels Package' },
@@ -35,12 +48,51 @@ export function BookingForm({ settings }: { settings: SiteSettings }) {
     { value: 'Other', ar: 'مجال آخر', en: 'Other' },
   ];
 
+  const getLocalizedError = (errorCode?: string): string => {
+    switch (errorCode) {
+      case 'RATE_LIMITED':
+        return lang === 'ar'
+          ? 'تم إرسال عدة طلبات في وقت قصير. يرجى المحاولة بعد قليل أو التواصل عبر واتساب مباشرة.'
+          : 'Too many requests sent. Please try again shortly or message via WhatsApp.';
+      case 'MISSING_FIELDS':
+        return lang === 'ar'
+          ? 'يرجى إدخال الاسم ورقم الواتساب ونوع المشروع بشكل صحيح.'
+          : 'Please enter your name, WhatsApp number, and project type.';
+      case 'INVALID_PHONE':
+        return lang === 'ar'
+          ? 'رقم الواتساب غير صالح — يرجى إدخال رقم صحيح مع رمز الدولة.'
+          : 'Invalid WhatsApp number — please enter a valid phone number.';
+      case 'FIELD_TOO_LONG':
+        return lang === 'ar'
+          ? 'أحد الحقول يتجاوز الحد المسموح للطول.'
+          : 'One of the fields exceeds the maximum allowed length.';
+      default:
+        return lang === 'ar'
+          ? 'حدث خطأ أثناء حفظ الطلب، يمكنك التواصل مباشرة عبر واتساب.'
+          : 'Unable to save your request right now. Please message directly on WhatsApp.';
+    }
+  };
+
   const buildWhatsappDirectUrl = () => {
     const cleanNum = settings.whatsapp_number.replace(/\D/g, '') || '201007176105';
+    const projectTypeLabel =
+      projectTypes.find((opt) => opt.value === projectType)?.[lang] || projectType;
+    const industryLabel =
+      industries.find((opt) => opt.value === industryField)?.[lang] || industryField;
+    const trimmedName = clientName.trim();
+    const greeting =
+      lang === 'ar'
+        ? trimmedName
+          ? `أهلاً يا محمد، اسمي ${trimmedName}.`
+          : 'أهلاً يا محمد، حابب أستفسر عن مشروع جديد.'
+        : trimmedName
+          ? `Hi Mohamed, I'm ${trimmedName}.`
+          : "Hi Mohamed, I'd like to inquire about a new project.";
+
     const text =
       lang === 'ar'
-        ? `أهلاً يا محمد، اسمي ${clientName || 'عميل جديد'}.\nنوع المشروع: ${projectType}\nالمجال: ${industryField}${budgetRange ? `\nالميزانية: ${budgetRange}` : ''}${projectDetails ? `\nالتفاصيل: ${projectDetails}` : ''}`
-        : `Hi Mohamed, I'm ${clientName || 'a new client'}.\nProject Type: ${projectType}\nIndustry: ${industryField}${budgetRange ? `\nBudget: ${budgetRange}` : ''}${projectDetails ? `\nDetails: ${projectDetails}` : ''}`;
+        ? `${greeting}\nنوع المشروع: ${projectTypeLabel}\nالمجال: ${industryLabel}${budgetRange.trim() ? `\nالميزانية: ${budgetRange.trim()}` : ''}${projectDetails.trim() ? `\nالتفاصيل: ${projectDetails.trim()}` : ''}`
+        : `${greeting}\nProject Type: ${projectTypeLabel}\nIndustry: ${industryLabel}${budgetRange.trim() ? `\nBudget: ${budgetRange.trim()}` : ''}${projectDetails.trim() ? `\nDetails: ${projectDetails.trim()}` : ''}`;
     return `https://wa.me/${cleanNum}?text=${encodeURIComponent(text)}`;
   };
 
@@ -60,26 +112,22 @@ export function BookingForm({ settings }: { settings: SiteSettings }) {
           industry_field: industryField,
           budget_range: budgetRange || null,
           project_details: projectDetails || null,
+          website,
         }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to submit');
+        setErrorMsg(getLocalizedError(data?.errorCode));
+        return;
       }
       trackAnalyticsEvent('Lead', {
         project_type: projectType,
         industry: industryField,
       });
       setSubmitted(true);
-    } catch (err) {
-      setErrorMsg(
-        err instanceof Error
-          ? err.message
-          : lang === 'ar'
-            ? 'حدث خطأ أثناء الإرسال، يمكنك التواصل مباشرة عبر واتساب.'
-            : 'Error sending request. You can message directly on WhatsApp.'
-      );
+    } catch {
+      setErrorMsg(getLocalizedError());
     } finally {
       setSubmitting(false);
     }
@@ -146,14 +194,34 @@ export function BookingForm({ settings }: { settings: SiteSettings }) {
         </h3>
       </div>
 
+      <div className="sr-only" aria-hidden="true">
+        <label htmlFor="booking-website">Website</label>
+        <input
+          id="booking-website"
+          name="website"
+          type="text"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+          <label
+            htmlFor="booking-client-name"
+            className="mb-1.5 block text-xs font-semibold text-slate-300"
+          >
             {lang === 'ar' ? 'الاسم أو اسم العيادة / الشركة *' : 'Your Name / Brand *'}
           </label>
           <input
+            id="booking-client-name"
+            name="client_name"
             type="text"
             required
+            autoComplete="name"
+            maxLength={120}
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
             placeholder={lang === 'ar' ? 'مثال: د. أحمد / عيادة كذا' : 'e.g. Dr. Ahmed / Studio X'}
@@ -162,12 +230,19 @@ export function BookingForm({ settings }: { settings: SiteSettings }) {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+          <label
+            htmlFor="booking-whatsapp-phone"
+            className="mb-1.5 block text-xs font-semibold text-slate-300"
+          >
             {lang === 'ar' ? 'رقم الواتساب للتواصل *' : 'WhatsApp Number *'}
           </label>
           <input
+            id="booking-whatsapp-phone"
+            name="whatsapp_phone"
             type="tel"
             required
+            autoComplete="tel"
+            maxLength={25}
             value={whatsappPhone}
             onChange={(e) => setWhatsappPhone(e.target.value)}
             placeholder="+20 10..."
@@ -177,10 +252,15 @@ export function BookingForm({ settings }: { settings: SiteSettings }) {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+          <label
+            htmlFor="booking-project-type"
+            className="mb-1.5 block text-xs font-semibold text-slate-300"
+          >
             {lang === 'ar' ? 'نوع المحتوى المطلوب' : 'Project Type'}
           </label>
           <select
+            id="booking-project-type"
+            name="project_type"
             value={projectType}
             onChange={(e) => setProjectType(e.target.value)}
             className="w-full rounded-xl border border-white/15 bg-[#081310] px-3.5 py-2.5 text-sm text-white focus:border-tealAccent focus:outline-none"
@@ -194,10 +274,15 @@ export function BookingForm({ settings }: { settings: SiteSettings }) {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+          <label
+            htmlFor="booking-industry-field"
+            className="mb-1.5 block text-xs font-semibold text-slate-300"
+          >
             {lang === 'ar' ? 'المجال / التخصص' : 'Industry / Field'}
           </label>
           <select
+            id="booking-industry-field"
+            name="industry_field"
             value={industryField}
             onChange={(e) => setIndustryField(e.target.value)}
             className="w-full rounded-xl border border-white/15 bg-[#081310] px-3.5 py-2.5 text-sm text-white focus:border-tealAccent focus:outline-none"
@@ -212,11 +297,17 @@ export function BookingForm({ settings }: { settings: SiteSettings }) {
       </div>
 
       <div className="mt-4">
-        <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+        <label
+          htmlFor="booking-project-details"
+          className="mb-1.5 block text-xs font-semibold text-slate-300"
+        >
           {lang === 'ar' ? 'تفاصيل الفكرة أو عدد الفيديوهات (اختياري)' : 'Project Details (Optional)'}
         </label>
         <textarea
+          id="booking-project-details"
+          name="project_details"
           rows={3}
+          maxLength={2000}
           value={projectDetails}
           onChange={(e) => setProjectDetails(e.target.value)}
           placeholder={
@@ -229,11 +320,17 @@ export function BookingForm({ settings }: { settings: SiteSettings }) {
       </div>
 
       <div className="mt-4">
-        <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+        <label
+          htmlFor="booking-budget-range"
+          className="mb-1.5 block text-xs font-semibold text-slate-300"
+        >
           {lang === 'ar' ? 'الميزانية التقديرية (اختياري)' : 'Estimated Budget (Optional)'}
         </label>
         <input
+          id="booking-budget-range"
+          name="budget_range"
           type="text"
+          maxLength={120}
           value={budgetRange}
           onChange={(e) => setBudgetRange(e.target.value)}
           placeholder={lang === 'ar' ? 'مثال: باقة شهرية / مشروع واحد' : 'e.g. Monthly retainer / One-off'}

@@ -4,8 +4,9 @@ import React from 'react';
 import { SectionViewClient } from '@/components/section-view-client';
 import { getPortfolioBundle } from '@/lib/portfolio-service';
 import { buildOgMetadata, pickCollectionOgImage } from '@/lib/seo';
+import { getYouTubeThumbUrl } from '@/lib/utils';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -55,6 +56,26 @@ export default async function SectionPage({
     (m) => m.section_id === section.id && !m.folder_id
   );
 
+  const folderPreviews: Record<string, { thumbUrl: string | null; count: number }> = {};
+  for (const folder of folders) {
+    const folderItems = bundle.mediaItems.filter(
+      (m) => m.section_id === section.id && m.folder_id === folder.id
+    );
+    const firstWithThumb = folderItems.find(
+      (m) => m.custom_thumb_url || m.image_url || m.youtube_id
+    );
+    const thumbUrl =
+      firstWithThumb?.custom_thumb_url ||
+      firstWithThumb?.image_url ||
+      (firstWithThumb?.youtube_id
+        ? getYouTubeThumbUrl(firstWithThumb.youtube_id)
+        : null);
+    folderPreviews[folder.id] = {
+      thumbUrl,
+      count: folderItems.length,
+    };
+  }
+
   return (
     <SectionViewClient
       settings={bundle.settings}
@@ -62,6 +83,7 @@ export default async function SectionPage({
       section={section}
       folders={folders}
       directMedia={directMedia}
+      folderPreviews={folderPreviews}
     />
   );
 }

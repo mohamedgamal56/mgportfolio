@@ -50,3 +50,35 @@ export function isYouTubeShortsInput(input: string): boolean {
 export function getYouTubeThumbUrl(youtubeId: string): string {
   return `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
 }
+
+export function normalizeArabicCopy(text: string): string {
+  if (!text) return text;
+  return text
+    .replace(/ماشاء\s*الله/g, 'ما شاء الله')
+    .replace(/الـ(?=[A-Za-z])/g, 'الـ ')
+    .replace(
+      /(^|[\s،.(])و([A-Za-z][A-Za-z0-9-]*(?:\s+[A-Za-z][A-Za-z0-9-]*)*)/g,
+      '$1و \u2066$2\u2069'
+    );
+}
+
+export function isOptimizableImageUrl(src: string | null | undefined): boolean {
+  if (!src) return false;
+  const trimmed = src.trim();
+  if (!trimmed) return false;
+  if (trimmed.startsWith('/') && !trimmed.startsWith('//')) {
+    return true;
+  }
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== 'https:') return false;
+    const host = parsed.hostname.toLowerCase();
+    return (
+      host === 'i.ytimg.com' ||
+      host === 'img.youtube.com' ||
+      host.endsWith('.supabase.co')
+    );
+  } catch {
+    return false;
+  }
+}

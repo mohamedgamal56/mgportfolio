@@ -12,10 +12,11 @@ import {
   Quote,
   Share2,
 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { PortfolioDataBundle } from '@/types/portfolio';
-import { cn } from '@/lib/utils';
+import { cn, isOptimizableImageUrl } from '@/lib/utils';
 import { BookingForm } from './booking-form';
 import { PortfolioIcon } from './icon-mapper';
 import { useLanguage } from './language-provider';
@@ -27,6 +28,9 @@ import { VideoLightbox } from './video-modal';
 export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
   const { lang, t } = useLanguage();
   const [showreelOpen, setShowreelOpen] = useState(false);
+  const [selectedProjectType, setSelectedProjectType] = useState<string | undefined>(
+    undefined
+  );
 
   const {
     settings,
@@ -39,8 +43,35 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
     clientLogos,
   } = bundle;
 
+  useEffect(() => {
+    document.title =
+      lang === 'ar'
+        ? `${settings.brand_name_ar} — مخرج ومصور ومونتير وصانع ريلز | ${settings.brand_name_en}`
+        : `${settings.brand_name_en} — Commercial Filmmaker, Video Editor & Reel Creator`;
+  }, [lang, settings.brand_name_ar, settings.brand_name_en]);
+
   const vis = settings.section_visibility;
   const ArrowIcon = lang === 'ar' ? ArrowLeft : ArrowRight;
+  const heroBgSrc = settings.hero_bg_image_url || '/images/hero-portrait.webp';
+
+  const heroEyebrow =
+    lang === 'ar' && settings.hero_eyebrow === 'COMMERCIAL FILMMAKER · REEL CREATOR'
+      ? 'مخرج إعلانات · صانع ريلز'
+      : settings.hero_eyebrow;
+  const hwwEyebrow =
+    lang === 'ar' && settings.hww_eyebrow === 'HOW WE WORK'
+      ? 'كيف نعمل'
+      : settings.hww_eyebrow;
+  const ctaEyebrow =
+    lang === 'ar' && settings.cta_eyebrow === "LET'S CREATE"
+      ? 'لنبدأ مشروعك'
+      : settings.cta_eyebrow;
+
+  const mapServiceToProjectType = (serviceId: string): string => {
+    if (serviceId === 'srv-podcast') return 'Podcast Production';
+    if (serviceId === 'srv-commercial') return 'Commercial Ad';
+    return 'Reels Package';
+  };
 
   const featuredVideos = mediaItems.filter(
     (m) => m.is_featured && m.media_type === 'youtube' && m.is_visible
@@ -70,14 +101,25 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
         <section className="relative overflow-hidden border-b border-white/10">
           {/* Optimized WebP Portrait Background */}
           <div className="pointer-events-none absolute inset-0 z-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={settings.hero_bg_image_url || '/images/hero-portrait.webp'}
-              alt={t(settings.hero_title_ar, settings.hero_title_en)}
-              loading="eager"
-              fetchPriority="high"
-              className="h-full w-full object-cover object-[center_20%] opacity-45 sm:opacity-55"
-            />
+            {isOptimizableImageUrl(heroBgSrc) ? (
+              <Image
+                src={heroBgSrc}
+                alt={t(settings.hero_title_ar, settings.hero_title_en)}
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover object-[center_20%] opacity-45 sm:opacity-55"
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={heroBgSrc}
+                alt={t(settings.hero_title_ar, settings.hero_title_en)}
+                loading="eager"
+                fetchPriority="high"
+                className="h-full w-full object-cover object-[center_20%] opacity-45 sm:opacity-55"
+              />
+            )}
             <div
               className={cn(
                 'absolute inset-0',
@@ -93,9 +135,15 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
             <div className="grid items-center gap-12 lg:grid-cols-12">
               {/* Left/Start: Hero Identity + CTAs */}
               <div className="lg:col-span-6">
-                <div className="inline-flex items-center gap-2 rounded-full border border-tealAccent/30 bg-tealAccent/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-tealAccent backdrop-blur-md">
-                  <span className="h-1.5 w-1.5 rounded-full bg-tealAccent animate-pulse" />
-                  <span>{settings.hero_eyebrow}</span>
+                <div
+                  className={cn(
+                    'inline-flex max-w-full items-center gap-2 rounded-full border border-tealAccent/30 bg-tealAccent/10 px-3 py-1 text-[10px] font-bold text-tealAccent backdrop-blur-md sm:px-3.5 sm:text-[11px]',
+                    !/[\u0600-\u06FF]/.test(heroEyebrow) &&
+                      'uppercase tracking-[0.12em] sm:tracking-[0.22em]'
+                  )}
+                >
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-tealAccent animate-pulse" />
+                  <span>{heroEyebrow}</span>
                 </div>
 
                 <h1 className="mt-5 text-4xl font-black leading-[1.08] text-white sm:text-6xl lg:text-7xl">
@@ -198,7 +246,12 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
           <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
             <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-tealAccent">
+                <span
+                  className={cn(
+                    'text-[11px] font-bold text-tealAccent',
+                    lang === 'en' && 'uppercase tracking-[0.22em]'
+                  )}
+                >
                   {lang === 'ar' ? 'أعمال مختارة' : 'SELECTED REELS & FILMS'}
                 </span>
                 <h2 className="mt-1.5 text-2xl font-extrabold text-white sm:text-4xl">
@@ -216,7 +269,7 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
 
             {/* Separate 16:9 Featured from 9:16 Featured cleanly */}
             {featuredVideos.some((v) => v.aspect_ratio === '9:16') && (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                 {featuredVideos
                   .filter((v) => v.aspect_ratio === '9:16')
                   .slice(0, 4)
@@ -243,7 +296,12 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
         {vis.client_logos && clientLogos.length > 0 && (
           <section className="border-y border-white/10 bg-white/[0.015] py-12">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <p className="mb-6 text-center text-xs font-bold uppercase tracking-[0.22em] text-slate-400">
+              <p
+                className={cn(
+                  'mb-6 text-center text-xs font-bold text-slate-400',
+                  lang === 'en' && 'uppercase tracking-[0.22em]'
+                )}
+              >
                 {lang === 'ar' ? 'شركاء وعملاء تشرفت بالعمل معهم' : 'TRUSTED BY BRANDS & DOCTORS'}
               </p>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
@@ -277,7 +335,12 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
             <div className="glass-panel rounded-3xl p-6 sm:p-10">
               <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                 <div>
-                  <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-amberAccent">
+                  <span
+                    className={cn(
+                      'text-[11px] font-bold text-amberAccent',
+                      lang === 'en' && 'uppercase tracking-[0.22em]'
+                    )}
+                  >
                     {lang === 'ar' ? 'نتائج موثقة' : 'REAL RESULTS'}
                   </span>
                   <h2 className="mt-1.5 text-2xl font-extrabold text-white sm:text-3xl">
@@ -308,7 +371,12 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
         {vis.services && services.length > 0 && (
           <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
             <div className="mb-10 max-w-2xl">
-              <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-tealAccent">
+              <span
+                className={cn(
+                  'text-[11px] font-bold text-tealAccent',
+                  lang === 'en' && 'uppercase tracking-[0.22em]'
+                )}
+              >
                 {lang === 'ar' ? 'الخدمات والباقات' : 'SERVICES & PACKAGES'}
               </span>
               <h2 className="mt-2 text-2xl font-extrabold text-white sm:text-4xl">
@@ -351,6 +419,9 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
 
                   <a
                     href="#booking"
+                    onClick={() =>
+                      setSelectedProjectType(mapServiceToProjectType(srv.id))
+                    }
                     className="mt-6 inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-bold text-white transition hover:border-tealAccent hover:text-tealAccent"
                   >
                     <span>{lang === 'ar' ? 'اطلب هذه الباقة' : 'Request This Package'}</span>
@@ -366,7 +437,12 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
         {vis.equipment && equipment.length > 0 && (
           <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
             <div className="mb-8">
-              <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-violetAccent">
+              <span
+                className={cn(
+                  'text-[11px] font-bold text-violetAccent',
+                  lang === 'en' && 'uppercase tracking-[0.22em]'
+                )}
+              >
                 {lang === 'ar' ? 'المعدات والبرامج' : 'GEAR & WORKFLOW'}
               </span>
               <h2 className="mt-2 text-2xl font-extrabold text-white sm:text-3xl">
@@ -398,8 +474,13 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
           <section id="process" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
             <div className="grid gap-6 lg:grid-cols-12">
               <div className="glass-panel flex flex-col justify-center rounded-3xl bg-gradient-to-br from-tealAccent/10 via-transparent to-violetAccent/10 p-7 sm:p-10 lg:col-span-5">
-                <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-tealAccent">
-                  {settings.hww_eyebrow}
+                <span
+                  className={cn(
+                    'text-[11px] font-bold text-tealAccent',
+                    !/[\u0600-\u06FF]/.test(hwwEyebrow) && 'uppercase tracking-[0.22em]'
+                  )}
+                >
+                  {hwwEyebrow}
                 </span>
                 <h2 className="mt-2 text-3xl font-black text-white sm:text-4xl">
                   {t(settings.hww_title_ar, settings.hww_title_en)}
@@ -437,7 +518,12 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
         {vis.testimonials && testimonials.length > 0 && (
           <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
             <div className="mb-8">
-              <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-tealAccent">
+              <span
+                className={cn(
+                  'text-[11px] font-bold text-tealAccent',
+                  lang === 'en' && 'uppercase tracking-[0.22em]'
+                )}
+              >
                 {lang === 'ar' ? 'شهادات موثقة' : 'CLIENTS'}
               </span>
               <h2 className="mt-1.5 text-2xl font-extrabold text-white sm:text-4xl">
@@ -483,8 +569,13 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
         <section id="booking" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="grid items-start gap-8 lg:grid-cols-12">
             <div className="glass-panel rounded-3xl bg-[radial-gradient(circle_at_top,rgba(32,216,189,0.14),transparent_60%)] p-7 sm:p-10 lg:col-span-5">
-              <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-tealAccent">
-                {settings.cta_eyebrow}
+              <span
+                className={cn(
+                  'text-[11px] font-bold text-tealAccent',
+                  !/[\u0600-\u06FF]/.test(ctaEyebrow) && 'uppercase tracking-[0.22em]'
+                )}
+              >
+                {ctaEyebrow}
               </span>
               <h2 className="mt-2 text-2xl font-black leading-snug text-white sm:text-4xl">
                 {t(settings.cta_title_ar, settings.cta_title_en)}
@@ -539,7 +630,10 @@ export function HomeClient({ bundle }: { bundle: PortfolioDataBundle }) {
 
             {vis.booking_form && (
               <div className="lg:col-span-7">
-                <BookingForm settings={settings} />
+                <BookingForm
+                  settings={settings}
+                  selectedProjectType={selectedProjectType}
+                />
               </div>
             )}
           </div>
